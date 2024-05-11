@@ -1,7 +1,12 @@
 {% extends 'schoolapp/base.html' %}
+{% load static %}
 
 {% block titile%}
 Study
+{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/study.css' %}">
 {% endblock %}
 
 {% block content%}

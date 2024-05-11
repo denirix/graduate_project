@@ -1,7 +1,12 @@
 {% extends 'schoolapp/base.html' %}
+{% load static %}
 
 {% block titile%}
 News
+{% endblock %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/news.css' %}">
 {% endblock %}
 
 {% block content%}
