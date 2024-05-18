@@ -77,8 +77,8 @@ WSGI_APPLICATION = 'onlineschool.wsgi.application'
 DATABASES = {
        'default': {
            'ENGINE': 'django.db.backends.postgresql',
-           'NAME': 'olnineschooldb',
-           'USER': 'deni',
+           'NAME': 'school',
+           'USER': 'newuser',
            'PASSWORD': '123',
            'HOST': 'localhost',
            'PORT': '5432',

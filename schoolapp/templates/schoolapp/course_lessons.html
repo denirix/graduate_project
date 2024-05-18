@@ -1,0 +1,17 @@
+{% extends 'schoolapp/base.html' %}
+{% load static %}
+
+{% block content %}
+<h1>{{ course.name }}</h1>
+
+<h2>Уроки</h2>
+<ol>
+  {% for lesson in lessons %}
+    <li>
+      <h3>{{ lesson.name }}</h3>
+      <p>{{ lesson.description }}</p>
+      <p>Видео: <a href="{{ lesson.video_url }}" target="_blank">{{ lesson.video_url }}</a></p>
+    </li>
+  {% endfor %}
+</ol>
+{% endblock %}

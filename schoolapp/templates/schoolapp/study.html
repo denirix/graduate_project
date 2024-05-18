@@ -1,7 +1,7 @@
 {% extends 'schoolapp/base.html' %}
 {% load static %}
 
-{% block titile%}
+{% block title %}
 Study
 {% endblock %}
 
@@ -9,7 +9,106 @@ Study
     <link rel="stylesheet" href="{% static 'css/study.css' %}">
 {% endblock %}
 
-{% block content%}
-    <h1>Study</h1>
-    <p>Text</p>
+{% block content %}
+  <h1 class="mb-4">Список курсов</h1>
+
+  <form class="mb-4" method="get" action="{% url 'study' %}">
+    <div class="input-group">
+      <input type="text" class="form-control" name="q" placeholder="Поиск по названию" value="{{ request.GET.q }}">
+      <div class="input-group-append">
+        <button class="btn btn-outline-secondary" type="submit">Найти</button>
+      </div>
+    </div>
+  </form>
+
+  <div class="row">
+    {% for course in courses %}
+      <div class="col-md-12 mb-4">
+        <div class="card border border-dark">
+          <div class="card-body">
+            <h5 class="card-title"><a href="{% url 'course_detail' course.id %}" class="text-dark">{{ course.name }}</a></h5>
+            <p class="card-text">{{ course.description|truncatechars:136 }}</p>
+            <p class="card-text"><strong>Цена:</strong> {{ course.price }}</p>
+            {% if user.is_authenticated %}
+              <a href="{% url 'add_to_cart' course.id %}" class="btn btn-outline-dark">Добавить в корзину</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  {% if courses.has_other_pages %}
+    <nav aria-label="Page navigation">
+      <ul class="pagination justify-content-center">
+        {% if courses.has_previous %}
+          <li class="page-item">
+            <a class="page-link text-dark" href="?page={{ courses.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="Previous">
+              <span aria-hidden="true">&laquo;</span>
+            </a>
+          </li>
+        {% else %}
+          <li class="page-item disabled">
+            <span class="page-link text-dark">&laquo;</span>
+          </li>
+        {% endif %}
+
+        {% for page_num in courses.paginator.page_range %}
+        {% if courses.has_other_pages %}
+        <nav aria-label="Page navigation">
+          <ul class="pagination justify-content-center">
+            {% if courses.has_previous %}
+            <li class="page-item">
+              <a class="page-link text-dark" href="?page={{ courses.previous_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+              </a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+              <span class="page-link text-dark">&laquo;</span>
+            </li>
+            {% endif %}
+
+            {% for page_num in courses.paginator.page_range %}
+            {% if courses.number == page_num %}
+            <li class="page-item active" aria-current="page">
+              <span class="page-link text-dark">{{ page_num }}</span>
+            </li>
+            {% else %}
+            <li class="page-item">
+              <a class="page-link text-dark" href="?page={{ page_num }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}">{{ page_num }}</a>
+            </li>
+            {% endif %}
+            {% endfor %}
+
+            {% if courses.has_next %}
+            <li class="page-item">
+              <a class="page-link text-dark" href="?page={{ courses.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+              </a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+              <span class="page-link text-dark">&raquo;</span>
+            </li>
+            {% endif %}
+          </ul>
+        </nav>
+        {% endif %}
+        {% endfor %}
+
+        {% if courses.has_next %}
+          <li class="page-item">
+            <a class="page-link text-dark" href="?page={{ courses.next_page_number }}{% if request.GET.q %}&q={{ request.GET.q }}{% endif %}" aria-label="Next">
+              <span aria-hidden="true">&raquo;</span>
+            </a>
+          </li>
+        {% else %}
+          <li class="page-item disabled">
+            <span class="page-link text-dark">&raquo;</span>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+  {% endif %}
 {% endblock %}

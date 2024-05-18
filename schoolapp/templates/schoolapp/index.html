@@ -10,6 +10,11 @@ Main page
 {% endblock %}
 
 {% block content %}
+{% if messages %}
+  {% for message in messages %}
+    <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+  {% endfor %}
+{% endif %}
     <h1>Main page</h1>
     <p>Text</p>
 {% endblock %}
