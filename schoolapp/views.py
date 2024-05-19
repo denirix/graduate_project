@@ -1,3 +1,4 @@
+from os import name
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import CustomUserCreationForm
 from django.contrib.auth import authenticate, login
@@ -19,15 +20,23 @@ def study(request):
     query = request.GET.get('q', '')
     courses = Course.objects.filter(name__icontains=query)
     paginated_courses = paginate_courses(request, courses)
+
+    if request.user.is_authenticated:
+        user_orders = Order.objects.filter(user=request.user, status='ordered')
+        purchased_courses = Course.objects.filter(order__in=user_orders)
+    else:
+        purchased_courses = []
+
     context = {
         'courses': paginated_courses,
+        'purchased_courses': purchased_courses,
     }
     return render(request, 'schoolapp/study.html', context)
 
 def about(request):
     return render(request,'schoolapp/about.html')
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger(name)
 
 def signup_view(request):
     if request.method == 'POST':
@@ -84,6 +93,13 @@ def add_to_cart(request, course_id):
     return redirect('cart')
 
 @login_required
+def remove_from_cart(request, course_id):
+    course = get_object_or_404(Course, pk=course_id)
+    cart, created = Order.objects.get_or_create(user=request.user, status='cart')
+    cart.courses.remove(course)
+    return redirect('cart')
+
+@login_required
 def checkout(request):
     cart = Order.objects.get(user=request.user, status='cart')
 
@@ -101,14 +117,23 @@ def checkout(request):
 
 @login_required
 def profile(request):
-    orders = Order.objects.filter(user=request.user, status='ordered')
+    if request.method == 'POST':
+        profile_picture = request.FILES.get('profile_picture')
+        if profile_picture:
+            request.user.profile_picture = profile_picture
+            request.user.save()
+            return redirect('profile')
+
+    orders = Order.objects.filter(user=request.user)
+    purchased_courses = Course.objects.filter(order__user=request.user).distinct()
     context = {
         'orders': orders,
+        'purchased_courses': purchased_courses,
     }
     return render(request, 'schoolapp/profile.html', context)
 
 def paginate_courses(request, courses):
-    paginator = Paginator(courses, 10)  # Количество курсов на странице
+    paginator = Paginator(courses, 10)
     page = request.GET.get('page')
     try:
         courses = paginator.page(page)

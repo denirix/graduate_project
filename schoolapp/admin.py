@@ -5,5 +5,3 @@ admin.site.register(Course)
 admin.site.register(Order)
 admin.site.register(Lesson)
 admin.site.register(UserProfile)
-
-# Register your models here.
