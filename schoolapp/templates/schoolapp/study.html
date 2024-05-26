@@ -32,6 +32,8 @@ Study
               <p class="card-text"><strong>Цена:</strong> {{ course.price }} BYN</p>
               {% if course in purchased_courses %}
                 <p class="card-text">Уже куплено</p>
+              {% elif course in cart_courses %}
+                <p class="card-text">Уже добавлено</p>
               {% else %}
                 <a href="{% url 'add_to_cart' course.id %}" class="btn btn-outline-dark">Добавить в корзину</a>
               {% endif %}

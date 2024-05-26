@@ -16,13 +16,23 @@
         <div class="card-body text-center">
           <h4 class="card-title mb-1 text-dark">{{ user.username }}</h4>
           <p class="card-text mb-2 text-dark">{{ user.email }}</p>
-          <p class="card-text text-dark">
-            <small>Зарегистрирован: {{ user.date_joined }}</small>
-          </p>
+          <p class="card-text mb-2 text-dark">Телефон: {{ user.profile.phone }}</p>
+          <p class="card-text mb-2 text-dark">Дата рождения: {{ user.profile.birth_date|date:"d.m.Y" }}</p>
+          <button type="button" class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+            Забыли пароль?
+          </button>
         </div>
       </div>
     </div>
     <div class="col-lg-9">
+      {% if messages %}
+        {% for message in messages %}
+          <div class="alert alert-success alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
       <div class="row">
         <div class="col-md-8">
           <div class="card border border-dark shadow-sm">
@@ -57,7 +67,7 @@
               {% for order in orders %}
                 <div class="card mb-3 border-0 shadow-sm">
                   <div class="card-body">
-                    <h6 class="card-title mb-2 text-dark">Заказ №{{ order.id }}</h6>
+                    <h6 class="card-title mb-2 text-dark">Заказ</h6>
                     <ul class="list-unstyled mb-3">
                       {% for item in order.items.all %}
                         <li class="mb-2 text-dark">
@@ -76,6 +86,34 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="changePasswordModalLabel">Сменить пароль</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form method="post" action="{% url 'change_password' %}">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label for="old_password" class="form-label">Старый пароль</label>
+            <input type="password" class="form-control" id="old_password" name="old_password" required>
+          </div>
+          <div class="mb-3">
+            <label for="new_password1" class="form-label">Новый пароль</label>
+            <input type="password" class="form-control" id="new_password1" name="new_password1" required>
+          </div>
+          <div class="mb-3">
+            <label for="new_password2" class="form-label">Повторите новый пароль</label>
+            <input type="password" class="form-control" id="new_password2" name="new_password2" required>
+          </div>
+          <button type="submit" class="btn btn-dark">Сохранить</button>
+        </form>
       </div>
     </div>
   </div>

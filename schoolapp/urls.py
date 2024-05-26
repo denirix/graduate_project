@@ -17,4 +17,5 @@ urlpatterns = [
     path('add-to-cart/<int:course_id>/', views.add_to_cart, name='add_to_cart'),
     path('remove_from_cart/<int:course_id>/', views.remove_from_cart, name='remove_from_cart'),
     path('course/<int:course_id>/lessons/', views.course_lessons, name='course_lessons'),
+    path('change_password/', views.change_password, name='change_password'),
 ]

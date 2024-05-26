@@ -8,6 +8,8 @@ from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib import messages
 from django.urls import reverse
+from django.contrib.auth import update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm
 import logging
 
 def index(request):
@@ -24,12 +26,16 @@ def study(request):
     if request.user.is_authenticated:
         user_orders = Order.objects.filter(user=request.user, status='ordered')
         purchased_courses = Course.objects.filter(order__in=user_orders)
+        cart, created = Order.objects.get_or_create(user=request.user, status='cart')
+        cart_courses = cart.courses.all()
     else:
         purchased_courses = []
+        cart_courses = []
 
     context = {
         'courses': paginated_courses,
         'purchased_courses': purchased_courses,
+        'cart_courses': cart_courses,
     }
     return render(request, 'schoolapp/study.html', context)
 
@@ -90,7 +96,9 @@ def add_to_cart(request, course_id):
     course = get_object_or_404(Course, pk=course_id)
     cart, created = Order.objects.get_or_create(user=request.user, status='cart')
     cart.courses.add(course)
-    return redirect('cart')
+
+    current_url = request.META.get('HTTP_REFERER', 'study')
+    return redirect(current_url)
 
 @login_required
 def remove_from_cart(request, course_id):
@@ -101,12 +109,11 @@ def remove_from_cart(request, course_id):
 
 @login_required
 def checkout(request):
-    cart = Order.objects.get(user=request.user, status='cart')
+    cart, _ = Order.objects.get_or_create(user=request.user, status='cart')
 
     if request.method == 'POST':
         cart.status = 'ordered'
         cart.save()
-        Order.objects.create(user=request.user, status='cart')
         messages.success(request, 'Спасибо за покупку!')
         return redirect(reverse('home'))
 
@@ -120,17 +127,31 @@ def profile(request):
     if request.method == 'POST':
         profile_picture = request.FILES.get('profile_picture')
         if profile_picture:
-            request.user.profile_picture = profile_picture
-            request.user.save()
+            request.user.profile.profile_picture = profile_picture
+            request.user.profile.save()
             return redirect('profile')
 
-    orders = Order.objects.filter(user=request.user)
-    purchased_courses = Course.objects.filter(order__user=request.user).distinct()
+    orders = Order.objects.filter(user=request.user, status='ordered')
+    purchased_courses = Course.objects.filter(order__user=request.user, order__status='ordered').distinct()
     context = {
         'orders': orders,
         'purchased_courses': purchased_courses,
     }
     return render(request, 'schoolapp/profile.html', context)
+
+@login_required
+def change_password(request):
+    if request.method == 'POST':
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            user = form.save()
+            update_session_auth_hash(request, user)
+            messages.success(request, 'Ваш пароль был успешно изменен.')
+            return redirect('profile')
+    else:
+        form = PasswordChangeForm(request.user)
+
+    return render(request, 'schoolapp/change_password.html', {'form': form})
 
 def paginate_courses(request, courses):
     paginator = Paginator(courses, 10)
