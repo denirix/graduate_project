@@ -29,7 +29,7 @@ Study
             <div class="card-body">
               <h5 class="card-title"><a href="{% url 'course_detail' course.id %}" class="text-dark">{{ course.name }}</a></h5>
               <p class="card-text">{{ course.description|truncatechars:136 }}</p>
-              <p class="card-text"><strong>Цена:</strong> {{ course.price }}</p>
+              <p class="card-text"><strong>Цена:</strong> {{ course.price }} BYN</p>
               {% if course in purchased_courses %}
                 <p class="card-text">Уже куплено</p>
               {% else %}
@@ -47,7 +47,7 @@ Study
             <div class="card-body">
               <h5 class="card-title">{{ course.name }}</h5>
               <p class="card-text">{{ course.description|truncatechars:136 }}</p>
-              <p class="card-text"><strong>Цена:</strong> {{ course.price }}</p>
+              <p class="card-text"><strong>Цена:</strong> {{ course.price }} BYN</p>
             </div>
           </div>
         </div>

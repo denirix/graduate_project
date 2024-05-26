@@ -14,14 +14,14 @@
               {% for course in cart_courses %}
                 <li class="list-group-item d-flex justify-content-between align-items-center">
                   <span>{{ course.name }}</span>
-                  <span class="ml-auto">{{ course.price }}</span>
+                  <span class="ml-auto">{{ course.price }} BYN</span>
                   <a href="{% url 'remove_from_cart' course.id %}" class="btn btn-danger btn-sm">Удалить</a>
                 </li>
               {% endfor %}
             </ul>
             <div class="d-flex justify-content-between align-items-center mb-4">
               <h4 class="mb-0">Общая стоимость:</h4>
-              <h4 class="mb-0">{{ cart.get_total_cost }}</h4>
+              <h4 class="mb-0">{{ cart.get_total_cost }} BYN</h4>
             </div>
             <a href="{% url 'checkout' %}" class="btn btn-dark btn-lg">Оформить заказ</a>
           {% else %}
