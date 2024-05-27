@@ -16,6 +16,9 @@ class Course(models.Model):
     description = models.TextField()
     price = models.DecimalField(max_digits=8, decimal_places=2)
     is_online = models.BooleanField(default=True)
+
+    def __str__(self):
+        return self.name
 # Модель урока в рамках курса
 class Lesson(models.Model):
     course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name='lessons')
@@ -23,6 +26,9 @@ class Lesson(models.Model):
     description = models.TextField()
     video_url = models.URLField(default='')
     order = models.PositiveIntegerField()
+
+    def __str__(self):
+        return f"{self.course.name} - {self.name}"
 # Модель заказа, сделанного пользователем
 class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
@@ -32,6 +38,10 @@ class Order(models.Model):
     def get_total_cost(self):
         total_cost = sum(course.price for course in self.courses.all())
         return total_cost
+
+    def __str__(self):
+        return f"Order {self.id} for {self.user.username}"
+
 # Модель новости
 class News(models.Model):
     title = models.CharField(max_length=200)
