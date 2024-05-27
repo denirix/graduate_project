@@ -32,3 +32,12 @@ class Order(models.Model):
     def get_total_cost(self):
         total_cost = sum(course.price for course in self.courses.all())
         return total_cost
+
+class News(models.Model):
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    image = models.ImageField(upload_to='news_images', null=True, blank=True)
+    pub_date = models.DateTimeField('date published')
+
+    def __str__(self):
+        return self.title

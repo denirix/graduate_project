@@ -7,6 +7,23 @@ Main page
 
 {% block extra_css %}
     <link rel="stylesheet" href="{% static 'css/index.css' %}">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <style>
+        .text-outline {
+            color: #fdfdfdde;
+            text-shadow:
+                -0px -0px 0 #f8f8f8,
+                2px -0px 0 #000000,
+                3px 1px 0 #000000,
+                2px 0px 0 #000000,
+                15px 15px 25px rgba(126, 115, 115, 0.829);
+            font-family: 'Playfair Display', serif;
+            font-weight: bold;
+        }
+        .btn {
+            margin: 0 20px;
+        }
+    </style>
 {% endblock %}
 
 {% block content %}
@@ -15,6 +32,16 @@ Main page
     <div class="alert alert-{{ message.tags }}">{{ message }}</div>
   {% endfor %}
 {% endif %}
-    <h1>Main page</h1>
-    <p>Text</p>
+
+<div class="container my-5 pt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8 text-center">
+      <h1 class="display-3 font-weight-bold text-outline mb-4">ТЫ ПОПАЛ НА ЛУЧШУЮ ОБУЧАЮЩУЮ ПЛАТФОРМУ В МИРЕ! ПРИСОЕДИНЯЙСЯ!</h1>
+      <div class="d-flex justify-content-center mt-5">
+        <a href="{% url 'signup' %}" class="btn btn-primary btn-lg">Зарегистрироваться</a>
+        <a href="{% url 'study' %}" class="btn btn-success btn-lg">Обучение</a>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}

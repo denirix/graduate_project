@@ -3,7 +3,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .forms import CustomUserCreationForm
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.forms import UserCreationForm
-from .models import UserProfile, Course, Order
+from .models import UserProfile, Course, Order, News
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.contrib import messages
@@ -163,3 +163,12 @@ def paginate_courses(request, courses):
     except EmptyPage:
         courses = paginator.page(paginator.num_pages)
     return courses
+
+def news(request):
+    news_list = News.objects.order_by('-pub_date')
+    context = {'news_list': news_list}
+    return render(request, 'schoolapp/news.html', context)
+
+def news_detail(request, news_id):
+    news_item = get_object_or_404(News, pk=news_id)
+    return render(request, 'schoolapp/news_detail.html', {'news': news_item})

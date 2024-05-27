@@ -1,7 +1,7 @@
 {% extends 'schoolapp/base.html' %}
 {% load static %}
 
-{% block titile%}
+{% block title %}
 News
 {% endblock %}
 
@@ -9,7 +9,34 @@ News
     <link rel="stylesheet" href="{% static 'css/news.css' %}">
 {% endblock %}
 
-{% block content%}
-    <h1>News</h1>
-    <p>Text</p>
+{% block content %}
+  <div class="container my-5">
+    <h1 class="mb-4">Новости</h1>
+    {% if news_list %}
+      <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-5">
+        {% for news in news_list %}
+          <div class="col">
+            <div class="card h-100">
+              {% if news.image %}
+                <img src="{{ news.image.url }}" class="card-img-top" alt="{{ news.title }}" style="height: 250px; object-fit: cover;">
+              {% else %}
+                <div class="card-img-top bg-secondary text-white py-5 text-center" style="height: 250px;">
+                  <span class="h4">{{ news.title }}</span>
+                </div>
+              {% endif %}
+              <div class="card-body">
+                <h5 class="card-title"><a href="{% url 'news_detail' news.id %}" class="text-decoration-none text-dark">{{ news.title }}</a></h5>
+                <p class="card-text">{{ news.description|truncatewords:20 }}</p>
+              </div>
+              <div class="card-footer">
+                <small class="text-muted">Опубликовано: {{ news.pub_date|date:"d M Y" }}</small>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="text-center">Нет доступных новостей.</p>
+    {% endif %}
+  </div>
 {% endblock %}
