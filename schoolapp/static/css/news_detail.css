@@ -1,0 +1,14 @@
+body::before {
+    content: "";
+    position: fixed;
+    top: 120px;
+    left: 100px;
+    width: 90%;
+    height: 90%;
+    background-image: url('/static/images/two.jpg');
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+    filter: blur(0px);
+    z-index: -1;
+  }

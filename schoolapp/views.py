@@ -15,19 +15,16 @@ import logging
 def index(request):
     return render(request,'schoolapp/index.html')
 
-def news(request):
-    return render(request,'schoolapp/news.html')
-
 def study(request):
-    query = request.GET.get('q', '')
-    courses = Course.objects.filter(name__icontains=query)
-    paginated_courses = paginate_courses(request, courses)
+    query = request.GET.get('q', '') # Получает параметр поиска из запроса
+    courses = Course.objects.filter(name__icontains=query) # Фильтрует курсы по названию
+    paginated_courses = paginate_courses(request, courses) # Добавляет постраничный вывод курсов
 
     if request.user.is_authenticated:
-        user_orders = Order.objects.filter(user=request.user, status='ordered')
-        purchased_courses = Course.objects.filter(order__in=user_orders)
-        cart, created = Order.objects.get_or_create(user=request.user, status='cart')
-        cart_courses = cart.courses.all()
+        user_orders = Order.objects.filter(user=request.user, status='ordered') # Получает все заказы пользователя со статусом 'ordered'
+        purchased_courses = Course.objects.filter(order__in=user_orders)  # Получает все курсы, входящие в эти заказы
+        cart, created = Order.objects.get_or_create(user=request.user, status='cart') # Создает или получает корзину пользователя со статусом 'cart'
+        cart_courses = cart.courses.all() # Получает все курсы, находящиеся в корзине
     else:
         purchased_courses = []
         cart_courses = []
@@ -46,7 +43,7 @@ logger = logging.getLogger(name)
 
 def signup_view(request):
     if request.method == 'POST':
-        form = CustomUserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST) # Создает форму регистрации с данными из запроса
         if form.is_valid():
             try:
                 user = form.save()
@@ -59,13 +56,13 @@ def signup_view(request):
                 login(request, user)
                 return redirect('home')
             except Exception as e:
-                logger.error(f'Error creating UserProfile: {e}')
+                logger.error(f'Error creating UserProfile: {e}') # Логирует ошибку при создании профиля пользователя
     else:
-        form = CustomUserCreationForm()
+        form = CustomUserCreationForm() # Создает пустую форму регистрации
     return render(request, 'schoolapp/signup.html', {'form': form})
 
 def course_detail(request, course_id):
-    course = get_object_or_404(Course, pk=course_id)
+    course = get_object_or_404(Course, pk=course_id) # Получает объект курса по id или возвращает 404
     context = {
         'course': course,
     }
@@ -73,8 +70,8 @@ def course_detail(request, course_id):
 
 @login_required
 def course_lessons(request, course_id):
-    course = get_object_or_404(Course, pk=course_id)
-    lessons = course.lessons.order_by('order')
+    course = get_object_or_404(Course, pk=course_id) # Получает объект курса по id или возвращает 404
+    lessons = course.lessons.order_by('order') # Получает уроки курса, отсортированные по порядку
     context = {
         'course': course,
         'lessons': lessons,
@@ -83,8 +80,8 @@ def course_lessons(request, course_id):
 
 @login_required
 def cart(request):
-    cart, created = Order.objects.get_or_create(user=request.user, status='cart')
-    cart_courses = cart.courses.all()
+    cart, created = Order.objects.get_or_create(user=request.user, status='cart') # Создает или получает корзину пользователя со статусом 'cart'
+    cart_courses = cart.courses.all() # Получает все курсы, находящиеся в корзине
     context = {
         'cart': cart,
         'cart_courses': cart_courses,
@@ -93,26 +90,26 @@ def cart(request):
 
 @login_required
 def add_to_cart(request, course_id):
-    course = get_object_or_404(Course, pk=course_id)
-    cart, created = Order.objects.get_or_create(user=request.user, status='cart')
+    course = get_object_or_404(Course, pk=course_id) # Получает объект курса по id или возвращает 404
+    cart, created = Order.objects.get_or_create(user=request.user, status='cart') # Создает или получает корзину пользователя со статусом 'cart'
     cart.courses.add(course)
 
-    current_url = request.META.get('HTTP_REFERER', 'study')
+    current_url = request.META.get('HTTP_REFERER', 'study') # Возвращает пользователя на предыдущую страницу или на страницу курсов
     return redirect(current_url)
 
 @login_required
 def remove_from_cart(request, course_id):
-    course = get_object_or_404(Course, pk=course_id)
-    cart, created = Order.objects.get_or_create(user=request.user, status='cart')
+    course = get_object_or_404(Course, pk=course_id) # Получает объект курса по id или возвращает 404
+    cart, created = Order.objects.get_or_create(user=request.user, status='cart') # Создает или получает корзину пользователя со статусом 'cart'
     cart.courses.remove(course)
     return redirect('cart')
 
 @login_required
 def checkout(request):
-    cart, _ = Order.objects.get_or_create(user=request.user, status='cart')
+    cart, _ = Order.objects.get_or_create(user=request.user, status='cart') # Создает или получает корзину пользователя со статусом 'cart'
 
     if request.method == 'POST':
-        cart.status = 'ordered'
+        cart.status = 'ordered' # Обрабатывает POST-запрос на оформление заказа
         cart.save()
         messages.success(request, 'Спасибо за покупку!')
         return redirect(reverse('home'))
@@ -131,8 +128,8 @@ def profile(request):
             request.user.profile.save()
             return redirect('profile')
 
-    orders = Order.objects.filter(user=request.user, status='ordered')
-    purchased_courses = Course.objects.filter(order__user=request.user, order__status='ordered').distinct()
+    orders = Order.objects.filter(user=request.user, status='ordered') # Получает все заказы пользователя со статусом 'ordered'
+    purchased_courses = Course.objects.filter(order__user=request.user, order__status='ordered').distinct() # Получает все курсы, купленные пользователем
     context = {
         'orders': orders,
         'purchased_courses': purchased_courses,
@@ -142,10 +139,10 @@ def profile(request):
 @login_required
 def change_password(request):
     if request.method == 'POST':
-        form = PasswordChangeForm(request.user, request.POST)
+        form = PasswordChangeForm(request.user, request.POST) # Создает форму смены пароля с данными из запроса
         if form.is_valid():
             user = form.save()
-            update_session_auth_hash(request, user)
+            update_session_auth_hash(request, user) # Обновляет сессию авторизации
             messages.success(request, 'Ваш пароль был успешно изменен.')
             return redirect('profile')
     else:
@@ -165,10 +162,10 @@ def paginate_courses(request, courses):
     return courses
 
 def news(request):
-    news_list = News.objects.order_by('-pub_date')
+    news_list = News.objects.order_by('-pub_date') # Получает все новости, отсортированные по дате публикации в обратном порядке
     context = {'news_list': news_list}
     return render(request, 'schoolapp/news.html', context)
 
 def news_detail(request, news_id):
-    news_item = get_object_or_404(News, pk=news_id)
+    news_item = get_object_or_404(News, pk=news_id) # Получает объект новости по id или возвращает 404
     return render(request, 'schoolapp/news_detail.html', {'news': news_item})

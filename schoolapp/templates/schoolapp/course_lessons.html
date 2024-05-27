@@ -9,7 +9,6 @@
   <div class="container-fluid py-5">
     <div class="container">
       <h1 class="mb-4">{{ course.name }}</h1>
-
       <div class="accordion" id="lessonsAccordion">
         {% for lesson in lessons %}
           <div class="accordion-item border-secondary mb-3">
@@ -21,7 +20,7 @@
             <div id="collapse-{{ lesson.id }}" class="accordion-collapse collapse" aria-labelledby="heading-{{ lesson.id }}" data-bs-parent="#lessonsAccordion">
               <div class="accordion-body bg-white text-dark p-4">
                 <h5>{{ lesson.name }}</h5>
-                <p>{{ lesson.description }}</p>
+                <p>{{ lesson.description|linebreaks }}</p>
                 {% if lesson.video_url %}
                   {% if 'youtube.com' in lesson.video_url or 'youtu.be' in lesson.video_url %}
                     <a href="{{ lesson.video_url }}" target="_blank" class="btn btn-dark">Смотреть видео на YouTube</a>

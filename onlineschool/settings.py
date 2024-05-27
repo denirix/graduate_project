@@ -82,7 +82,14 @@ DATABASES = {
            'PASSWORD': '123',
            'HOST': 'localhost',
            'PORT': '5432',
-       }
+       },
+       'TEST': {
+           'NAME': 'test_my_schoolapp',
+           'USER': 'newuser',
+           'PASSWORD': '123',
+           'HOST': 'localhost',
+           'PORT': '5432',
+       },
    }
 
 

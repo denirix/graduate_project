@@ -22,14 +22,14 @@ Study
   </form>
 
   <div class="row">
-    {% if user.is_authenticated %}
-      {% for course in courses %}
-        <div class="col-md-12 mb-4">
-          <div class="card border border-dark">
-            <div class="card-body">
-              <h5 class="card-title"><a href="{% url 'course_detail' course.id %}" class="text-dark">{{ course.name }}</a></h5>
-              <p class="card-text">{{ course.description|truncatechars:136 }}</p>
-              <p class="card-text"><strong>Цена:</strong> {{ course.price }} BYN</p>
+    {% for course in courses %}
+      <div class="col-md-12 mb-4">
+        <div class="card border border-dark">
+          <div class="card-body">
+            <h5 class="card-title"><a href="{% url 'course_detail' course.id %}" class="text-dark">{{ course.name }}</a></h5>
+            <p class="card-text">{{ course.description|truncatechars:136 }}</p>
+            <p class="card-text"><strong>Цена:</strong> {{ course.price }} BYN</p>
+            {% if user.is_authenticated %}
               {% if course in purchased_courses %}
                 <p class="card-text">Уже куплено</p>
               {% elif course in cart_courses %}
@@ -37,24 +37,11 @@ Study
               {% else %}
                 <a href="{% url 'add_to_cart' course.id %}" class="btn btn-outline-dark">Добавить в корзину</a>
               {% endif %}
-            </div>
+            {% endif %}
           </div>
         </div>
-      {% endfor %}
-    {% else %}
-      <p>Покупка курсов доступна только авторизованным пользователям.</p>
-      {% for course in courses %}
-        <div class="col-md-12 mb-4">
-          <div class="card border border-dark">
-            <div class="card-body">
-              <h5 class="card-title">{{ course.name }}</h5>
-              <p class="card-text">{{ course.description|truncatechars:136 }}</p>
-              <p class="card-text"><strong>Цена:</strong> {{ course.price }} BYN</p>
-            </div>
-          </div>
-        </div>
-      {% endfor %}
-    {% endif %}
+      </div>
+    {% endfor %}
   </div>
 
   {% if courses.has_other_pages %}
